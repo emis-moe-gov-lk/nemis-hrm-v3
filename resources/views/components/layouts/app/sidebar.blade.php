@@ -46,7 +46,7 @@
                 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.25)]
                 overflow-hidden
                 transform transition-transform duration-300
-                h-full flex flex-col 
+                h-full flex flex-col
                 lg:sticky lg:top-6
                 lg:h-[calc(100vh-3rem)]
             "
@@ -241,6 +241,38 @@
                         </span>
                         <span class="text-[13px] font-semibold">Transfer</span>
                     </a>
+                    @endcan
+
+                    @can('teacher-service-marks.view')
+                        <a href="{{ route('service-marks.index') }}" wire:navigate
+                            class="group flex items-center gap-3 rounded-xl px-3 py-2 transition
+                                {{ request()->routeIs(
+                                    'service-marks.index',
+                                    'service-marks.create',
+                                    'service-marks.show'
+                                ) ? $activePill : $inactivePill }}">
+                            <span class="grid place-items-center h-5 w-5 rounded-lg
+                                {{ request()->routeIs(
+                                    'service-marks.index',
+                                    'service-marks.create',
+                                    'service-marks.show'
+                                ) ? $iconActive : $iconInactive }}">
+                                <flux:icon.calculator variant="micro" />
+                            </span>
+                            <span class="text-[13px] font-semibold">Teacher Service Marks</span>
+                        </a>
+                    @endcan
+
+                    @can('teacher-service-marks.manage-rates')
+                        <a href="{{ route('service-marks.settings') }}" wire:navigate
+                            class="group flex items-center gap-3 rounded-xl px-3 py-2 transition
+                                {{ request()->routeIs('service-marks.settings') ? $activePill : $inactivePill }}">
+                            <span class="grid place-items-center h-5 w-5 rounded-lg
+                                {{ request()->routeIs('service-marks.settings') ? $iconActive : $iconInactive }}">
+                                <flux:icon.adjustments-horizontal variant="micro" />
+                            </span>
+                            <span class="text-[13px] font-semibold">Mark Settings</span>
+                        </a>
                     @endcan
 
                     {{-- Offices --}}

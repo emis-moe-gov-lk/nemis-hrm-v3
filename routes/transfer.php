@@ -32,6 +32,8 @@ use App\Livewire\Teacher\Transfer\TeacherTransferGuidelines;
 use App\Livewire\Institutions\Transfer\TransferRequests;
 use App\Livewire\Offices\Zeo\Transfer\TeachersTransferRequests;
 use App\Livewire\TransferModule\Teacher\TeacherTransferController;
+use Livewire\Volt\Volt;
+use App\Http\Controllers\TransferModule\Teacher\Reports\CurrentAppointmentDurationPdfController;
 
 Route::middleware(['auth'])->group(function () {
 
@@ -42,6 +44,20 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::get('transfer/index-teachers-module', IndexTeachersModule::class)
         ->name('transfer.index-module')
+        ->middleware(['can:transfer.portal.view']);
+
+    Volt::route(
+        'transfer/reports/current-appointment-duration',
+        'transfer-module.teacher.reports.current-appointment-duration-report'
+    )
+        ->name('transfer.reports.current-appointment-duration')
+        ->middleware(['can:transfer.portal.view']);
+
+    Route::get(
+        'transfer/reports/current-appointment-duration/pdf',
+        CurrentAppointmentDurationPdfController::class
+    )
+        ->name('transfer.reports.current-appointment-duration.pdf')
         ->middleware(['can:transfer.portal.view']);
 
     Route::get('transfer/transfer-policies', TeacherTransferPolicyList::class)

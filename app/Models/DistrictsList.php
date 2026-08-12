@@ -34,7 +34,11 @@ class DistrictsList extends Model
      */
     public function province()
     {
-        return $this->belongsTo(ProvincesList::class, 'province_id', 'province_id');
+        return $this->belongsTo(
+            ProvincesList::class,
+            'province_id',
+            'province_id'
+        );
     }
 
     public function divisionalSecretariatOffices()
@@ -44,7 +48,11 @@ class DistrictsList extends Model
 
     public function institutions()
     {
-        return $this->hasMany(Institution::class, 'district_id', 'district_id');
+        return $this->hasMany(
+            Institution::class,
+            'district_id',
+            'district_id'
+        );
     }
 
 }

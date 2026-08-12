@@ -76,7 +76,11 @@ class EmployerCurrentAppointment extends Model
     // Employer appointment
     public function appointment()
     {
-        return $this->belongsTo(EmployerAppointment::class, 'appointment_id', 'appointment_id');
+        return $this->belongsTo(
+            EmployerAppointment::class,
+            'appointment_id',
+            'appointment_id'
+        );
     }
 
     public function service()
@@ -105,7 +109,11 @@ class EmployerCurrentAppointment extends Model
 
     public function workplace()
     {
-        return $this->belongsTo(Workplaces::class, 'workplace_id', 'workplace_id');
+        return $this->belongsTo(
+            \App\Models\Institution::class,
+            'workplace_id',
+            'workplace_id'
+        );
     }
 
     public function getServiceYearsAttribute()
@@ -190,4 +198,5 @@ class EmployerCurrentAppointment extends Model
             ->useLogName('employer_current_appointments')
             ->dontSubmitEmptyLogs();
     }
+
 }

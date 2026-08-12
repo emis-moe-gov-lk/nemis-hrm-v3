@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('teacher_transfer_boards', function (Blueprint $table) {
-
             $table->id();
 
             // Unique Board ID
-            $table->string('board_id', 20)->unique('tb_board_unique');
+            $table->string('board_id', 20);
+            $table->unique('board_id', 'ttb_board_id_unique');
 
             // Relations
             $table->string('policy_id', 20);
@@ -28,12 +28,12 @@ return new class extends Migration
             $table->string('bo_workplace_id', 12)
                 ->comment('Board Owner Workplace ID');
 
-            // Board Details
+            // Board details
             $table->string('board_name');
             $table->date('start_date');
             $table->date('end_date');
 
-            // Roles
+            // Board roles
             $table->string('chairman_id', 12);
             $table->string('secretary_id', 12);
 
@@ -44,45 +44,57 @@ return new class extends Migration
             $table->timestamps();
 
             /*
-        |--------------------------------------------------------------------------
-        | Foreign Keys
-        |--------------------------------------------------------------------------
-        */
+            |--------------------------------------------------------------------------
+            | Foreign Keys
+            |--------------------------------------------------------------------------
+            */
 
-            $table->foreign('policy_id', 'tb_policy_fk')
+            $table->foreign('policy_id', 'ttb_policy_fk')
                 ->references('policy_id')
                 ->on('teacher_transfer_policies')
                 ->cascadeOnDelete();
 
-            $table->foreign('transfer_category_id', 'tb_category_fk')
+            $table->foreign(
+                'transfer_category_id',
+                'ttb_category_fk'
+            )
                 ->references('transfer_category_id')
                 ->on('teacher_transfer_categories');
 
-            $table->foreign('bo_office_level_id', 'tb_office_fk')
+            $table->foreign(
+                'bo_office_level_id',
+                'ttb_office_level_fk'
+            )
                 ->references('office_level_id')
                 ->on('office_levels');
 
-            $table->foreign('bo_workplace_id', 'tb_workplace_fk')
+            $table->foreign(
+                'bo_workplace_id',
+                'ttb_workplace_fk'
+            )
                 ->references('workplace_id')
                 ->on('workplaces');
 
-            $table->foreign('chairman_id', 'tb_chairman_fk')
+            $table->foreign('chairman_id', 'ttb_chairman_fk')
                 ->references('people_id')
                 ->on('people');
 
-            $table->foreign('secretary_id', 'tb_secretary_fk')
+            $table->foreign('secretary_id', 'ttb_secretary_fk')
                 ->references('people_id')
                 ->on('people');
 
-            $table->foreign('created_by', 'tb_created_fk')
+            $table->foreign('created_by', 'ttb_created_by_fk')
                 ->references('people_id')
-                ->on('people');
+                ->on('people')
+                ->nullOnDelete();
 
-            $table->foreign('updated_by', 'tb_updated_fk')
+            $table->foreign('updated_by', 'ttb_updated_by_fk')
                 ->references('people_id')
-                ->on('people');
+                ->on('people')
+                ->nullOnDelete();
         });
     }
+
     /**
      * Reverse the migrations.
      */

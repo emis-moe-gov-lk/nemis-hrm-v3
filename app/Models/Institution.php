@@ -101,10 +101,7 @@ class Institution extends Model
        Relationships
        ============================ */
 
-    public function zonalEducationOffice()
-    {
-        return $this->belongsTo(ZonalEducationOffice::class, 'zeo_wp_id', 'workplace_id');
-    }
+
 
     public function divisionalEducationOffice()
     {
@@ -204,5 +201,23 @@ class Institution extends Model
     public function facilityHistory()
     {
         return $this->hasMany(InstitutionalFacilityHistory::class, 'workplace_id', 'workplace_id');
+    }
+
+    public function workplace()
+    {
+        return $this->belongsTo(
+            \App\Models\Workplace::class,
+            'workplace_id',
+            'workplace_id'
+        );
+    }
+
+    public function zonalEducationOffice()
+    {
+        return $this->belongsTo(
+            \App\Models\ZonalEducationOffice::class,
+            'zeo_wp_id',
+            'workplace_id'
+        );
     }
 }

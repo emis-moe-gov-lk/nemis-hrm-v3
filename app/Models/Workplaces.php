@@ -109,11 +109,6 @@ class Workplaces extends Model
         return $this->hasOne(DivisionalEducationOffice::class, 'workplace_id', 'workplace_id');
     }
 
-    public function institution()
-    {
-        return $this->hasOne(Institution::class, 'workplace_id', 'workplace_id');
-    }
-
     /*
     |--------------------------------------------------------------------------
     | Optimized Office Resolver
@@ -240,5 +235,33 @@ class Workplaces extends Model
     public function scopeActive($query)
     {
         return $query->where('active_status', 1);
+    }
+
+
+    public function district()
+    {
+        return $this->belongsTo(
+            DistrictsList::class,
+            'district_id',
+            'district_id'
+        );
+    }
+
+    public function institution()
+    {
+        return $this->hasOne(
+            \App\Models\Institution::class,
+            'workplace_id',
+            'workplace_id'
+        );
+    }
+
+    public function zonalEducationOffice()
+    {
+        return $this->hasOne(
+            \App\Models\ZonalEducationOffice::class,
+            'workplace_id',
+            'workplace_id'
+        );
     }
 }

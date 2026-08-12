@@ -6,64 +6,95 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('transfer_board_member_attendances', function (Blueprint $table) {
-            $table->id();
+        Schema::create(
+            'transfer_board_member_attendances',
+            function (Blueprint $table) {
+                $table->id();
 
-            // Relations
-            $table->string('tbm_id', 20);
+                // Relations
+                $table->string('tbm_id', 20);
 
-            // Attendance Info
-            $table->date('attendance_date');
+                // Attendance information
+                $table->date('attendance_date');
 
-            $table->enum('attendance_status', ['present', 'absent', 'late'])
-                ->default('present');
+                $table->enum(
+                    'attendance_status',
+                    ['present', 'absent', 'late']
+                )->default('present');
 
-            $table->text('remarks')->nullable();
+                $table->text('remarks')->nullable();
 
-            // Status
-            $table->boolean('active_status')
-                ->default(true)
-                ->comment('true: Active, false: Inactive');
+                // Status
+                $table->boolean('active_status')
+                    ->default(true)
+                    ->comment('true: Active, false: Inactive');
 
-            // Audit
-            $table->string('created_by', 12)->nullable();
-            $table->string('updated_by', 12)->nullable();
+                // Audit
+                $table->string('created_by', 12)->nullable();
+                $table->string('updated_by', 12)->nullable();
 
-            $table->timestamps();
+                $table->timestamps();
 
-            // indexes
-            $table->index('tbm_id', 'tbma_tbm_idx');
-            $table->index('attendance_date', 'tbma_date_idx');
+                /*
+                |--------------------------------------------------------------------------
+                | Indexes and Unique Constraints
+                |--------------------------------------------------------------------------
+                */
 
-            // unique
-            $table->unique(['tbm_id', 'attendance_date'], 'tbma_unique');
+                $table->index(
+                    'tbm_id',
+                    'trbma_tbm_idx'
+                );
 
-            // FK
-            $table->foreign('tbm_id', 'tbma_member_fk')
-                ->references('tbm_id')
-                ->on('transfer_board_members')
-                ->cascadeOnDelete();
+                $table->index(
+                    'attendance_date',
+                    'trbma_attendance_date_idx'
+                );
 
-            $table->foreign('created_by', 'tbma_created_fk')
-                ->references('people_id')
-                ->on('people');
+                $table->unique(
+                    ['tbm_id', 'attendance_date'],
+                    'trbma_member_date_unique'
+                );
 
-            $table->foreign('updated_by', 'tbma_updated_fk')
-                ->references('people_id')
-                ->on('people');
-        });
+                /*
+                |--------------------------------------------------------------------------
+                | Foreign Keys
+                |--------------------------------------------------------------------------
+                */
+
+                $table->foreign(
+                    'tbm_id',
+                    'trbma_member_fk'
+                )
+                    ->references('tbm_id')
+                    ->on('transfer_board_members')
+                    ->cascadeOnDelete();
+
+                $table->foreign(
+                    'created_by',
+                    'trbma_created_by_fk'
+                )
+                    ->references('people_id')
+                    ->on('people')
+                    ->nullOnDelete();
+
+                $table->foreign(
+                    'updated_by',
+                    'trbma_updated_by_fk'
+                )
+                    ->references('people_id')
+                    ->on('people')
+                    ->nullOnDelete();
+            }
+        );
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('transfer_board_member_attendances');
+        Schema::dropIfExists(
+            'transfer_board_member_attendances'
+        );
     }
 };

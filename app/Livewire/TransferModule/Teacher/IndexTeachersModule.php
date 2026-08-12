@@ -116,6 +116,20 @@ class IndexTeachersModule extends Component
 
         $tools = [];
 
+        if ($canViewPortal) {
+            $tools[] = [
+                'label' => 'Appointment Duration Report',
+                'desc' => 'Find employees who have remained in their current appointment longer than the specified number of years.',
+                'icon' => 'chart-bar',
+                'route' => route(
+                    'transfer.reports.current-appointment-duration'
+                ),
+                'gradient' => 'from-cyan-500 to-blue-600',
+                'shadow' => 'shadow-cyan-200',
+                'text' => 'text-cyan-600',
+            ];
+        }
+
         if ($canViewPolicies) {
             $tools[] = [
                 'label' => 'Policy Definitions',

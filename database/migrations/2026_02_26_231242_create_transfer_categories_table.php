@@ -12,11 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transfer_categories', function (Blueprint $table) {
-
             $table->id();
 
             $table->string('transfer_category_id', 20);
-
             $table->string('policy_id', 20);
 
             $table->char('office_level_id', 10);
@@ -31,19 +29,30 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Short unique name
-            $table->unique('transfer_category_id', 'tca_id_unique');
+            $table->unique(
+                'transfer_category_id',
+                'transfer_categories_id_unique'
+            );
 
-            $table->foreign('policy_id', 'tca_policy_fk')
+            $table->foreign(
+                'policy_id',
+                'transfer_categories_policy_fk'
+            )
                 ->references('policy_id')
                 ->on('transfer_policies')
-                ->onDelete('cascade');
+                ->cascadeOnDelete();
 
-            $table->foreign('office_level_id', 'tca_office_lvl_fk')
+            $table->foreign(
+                'office_level_id',
+                'transfer_categories_office_level_fk'
+            )
                 ->references('office_level_id')
                 ->on('office_levels');
 
-            $table->foreign('transfer_owner_workplace_id', 'tca_owner_wp_fk')
+            $table->foreign(
+                'transfer_owner_workplace_id',
+                'transfer_categories_owner_workplace_fk'
+            )
                 ->references('workplace_id')
                 ->on('workplaces');
         });

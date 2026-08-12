@@ -98,7 +98,7 @@
                         <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider">{{ $person->currentAppointment?->service?->service_name }}</span>
                     </div>
                     <p class="text-[11px] text-slate-500 truncate mt-0.5 font-medium">
-                        {{ $person->currentAppointment?->workplace?->office()?->name }}
+                        {{ $person->currentAppointment?->workplace?->name ?? '—' }}
                     </p>
                 </div>
 

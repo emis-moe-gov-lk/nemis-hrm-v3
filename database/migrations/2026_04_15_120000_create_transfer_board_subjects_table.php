@@ -26,26 +26,51 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique(['board_id', 'subject_id'], 'tbs_board_subject_unique');
-            $table->index(['board_id', 'active_status'], 'tbs_board_status_index');
-            $table->index('subject_id', 'tbs_subject_index');
+            /*
+            |--------------------------------------------------------------------------
+            | Indexes and Unique Constraints
+            |--------------------------------------------------------------------------
+            */
 
-            $table->foreign('board_id', 'tbs_board_fk')
+            $table->unique(
+                ['board_id', 'subject_id'],
+                'trbs_board_subject_unique'
+            );
+
+            $table->index(
+                ['board_id', 'active_status'],
+                'trbs_board_status_index'
+            );
+
+            $table->index(
+                'subject_id',
+                'trbs_subject_index'
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Foreign Keys
+            |--------------------------------------------------------------------------
+            */
+
+            $table->foreign('board_id', 'trbs_board_fk')
                 ->references('board_id')
                 ->on('transfer_boards')
                 ->cascadeOnDelete();
 
-            $table->foreign('subject_id', 'tbs_subject_fk')
+            $table->foreign('subject_id', 'trbs_subject_fk')
                 ->references('subject_id')
                 ->on('subject_lists');
 
-            $table->foreign('created_by', 'tbs_created_fk')
+            $table->foreign('created_by', 'trbs_created_by_fk')
                 ->references('people_id')
-                ->on('people');
+                ->on('people')
+                ->nullOnDelete();
 
-            $table->foreign('updated_by', 'tbs_updated_fk')
+            $table->foreign('updated_by', 'trbs_updated_by_fk')
                 ->references('people_id')
-                ->on('people');
+                ->on('people')
+                ->nullOnDelete();
         });
     }
 

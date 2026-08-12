@@ -12,21 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transfer_board_members', function (Blueprint $table) {
-
             $table->id();
 
-            // Unique member ID (optional but useful)
-            $table->string('tbm_id', 20)->unique('tbm_id_unique');
+            // Unique member ID
+            $table->string('tbm_id', 20);
 
             // Relations
             $table->string('board_id', 20);
-
             $table->string('people_id', 12);
 
             $table->string('association')->nullable();
 
             // Role in board
-            $table->string('role')->comment('Chairman, Member, Secretary');
+            $table->string('role')
+                ->comment('Chairman, Member, Secretary');
 
             // Status
             $table->boolean('active_status')
@@ -39,24 +38,43 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->foreign('board_id', 'tbm_board_fk')
+            /*
+            |--------------------------------------------------------------------------
+            | Unique Constraints
+            |--------------------------------------------------------------------------
+            */
+
+            $table->unique('tbm_id', 'trbm_id_unique');
+
+            $table->unique(
+                ['board_id', 'people_id'],
+                'trbm_board_people_unique'
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Foreign Keys
+            |--------------------------------------------------------------------------
+            */
+
+            $table->foreign('board_id', 'trbm_board_fk')
                 ->references('board_id')
-                ->on('transfer_boards');
+                ->on('transfer_boards')
+                ->cascadeOnDelete();
 
-            // composite unique (IMPORTANT)
-            $table->unique(['board_id', 'people_id'], 'tbm_board_people_unique');
-
-            $table->foreign('people_id', 'tbm_people_fk')
+            $table->foreign('people_id', 'trbm_people_fk')
                 ->references('people_id')
                 ->on('people');
 
-            $table->foreign('created_by', 'tbm_created_fk')
+            $table->foreign('created_by', 'trbm_created_by_fk')
                 ->references('people_id')
-                ->on('people');
+                ->on('people')
+                ->nullOnDelete();
 
-            $table->foreign('updated_by', 'tbm_updated_fk')
+            $table->foreign('updated_by', 'trbm_updated_by_fk')
                 ->references('people_id')
-                ->on('people');
+                ->on('people')
+                ->nullOnDelete();
         });
     }
 

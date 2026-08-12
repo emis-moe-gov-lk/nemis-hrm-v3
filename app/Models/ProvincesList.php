@@ -28,6 +28,10 @@ class ProvincesList extends Model
 
     public function districts()
     {
-        return $this->hasMany(DistrictsList::class, 'province_id', 'province_id');
+        return $this->hasMany(
+            DistrictsList::class,
+            'province_id',
+            'province_id'
+        );
     }
 }

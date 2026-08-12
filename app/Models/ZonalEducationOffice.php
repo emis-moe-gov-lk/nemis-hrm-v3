@@ -168,4 +168,13 @@ class ZonalEducationOffice extends Model
 
         return $result;
     }
+
+    public function workplace()
+    {
+        return $this->belongsTo(
+            Workplaces::class,
+            'workplace_id',
+            'workplace_id'
+        );
+    }
 }

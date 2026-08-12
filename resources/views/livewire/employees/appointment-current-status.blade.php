@@ -29,17 +29,17 @@
                 <span class="w-full sm:w-48 sm:shrink-0 text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest sm:pt-0.5">Active Placement</span>
                 <div>
                     <div class="flex flex-wrap items-center gap-2">
-                        @if ($employee->currentAppointment?->workplace?->office()?->census_no)
+                        @if ($employee->currentAppointment?->workplace?->census_no)
                         <span class="font-mono text-[10px] bg-slate-100 dark:bg-zinc-700 px-1.5 py-0.5 rounded text-slate-500 dark:text-zinc-400">
-                            {{ $employee->currentAppointment->workplace->office()->census_no }}
+                            {{ $employee->currentAppointment?->workplace?->census_no ?? '—' }}
                         </span>
                         @endif
                         <span class="text-sm font-semibold text-slate-800 dark:text-zinc-100">
-                            {{ $employee->currentAppointment->workplace->office()->name ?? 'Not Assigned' }}
+                            {{ $employee->currentAppointment?->workplace?->name ?? '—' }}
                         </span>
                     </div>
-                    @if($employee->currentAppointment->workplace->office()->address ?? null)
-                    <p class="text-[11px] text-slate-500 dark:text-zinc-400 mt-1">{{ $employee->currentAppointment->workplace->office()->address }}</p>
+                    @if($employee->currentAppointment?->workplace?->address)
+                    <p class="text-[11px] text-slate-500 dark:text-zinc-400 mt-1">{{ $employee->currentAppointment?->workplace?->address ?? '—' }}</p>
                     @endif
                 </div>
             </div>

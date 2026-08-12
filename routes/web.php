@@ -485,3 +485,4 @@ require __DIR__ . '/nationalSchool.php';
 require __DIR__ . '/transfer.php';
 require __DIR__ . '/employees.php';
 require __DIR__ . '/institutionGroups.php';
+require __DIR__.'/service-marks.php';
