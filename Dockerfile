@@ -4,7 +4,7 @@ FROM composer:2 AS vendor
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
+RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts --ignore-platform-reqs
 
 # Stage 2: Build frontend assets
 FROM node:22-bookworm-slim AS build
