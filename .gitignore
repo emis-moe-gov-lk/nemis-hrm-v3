@@ -5,9 +5,12 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage_bak/oauth-private.key
+/storage_bak/oauth-public.key
 /vendor
 .env
 .env.backup
+.env.docker
 .env.production
 .phpactor.json
 .phpunit.result.cache
