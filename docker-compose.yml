@@ -56,5 +56,5 @@ volumes:
   storage:
 
 networks:
-  cemis:
+  hrm-v3-test:
     driver: bridge
