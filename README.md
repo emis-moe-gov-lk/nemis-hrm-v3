@@ -33,6 +33,8 @@ A comprehensive Human Resource and Education Management platform built with a mo
     ```bash
     cp .env.example .env
     php artisan key:generate
+    touch database/database.sqlite
+    php artisan migrate --seed
     ```
 4. **Run the application**
 
@@ -46,24 +48,38 @@ A comprehensive Human Resource and Education Management platform built with a mo
 
 ## 🐳 Docker
 
-The project includes a Docker-based local stack for Laravel, Nginx, and MySQL.
+The project includes a Docker-based stack for Laravel (PHP-FPM), Nginx, and MySQL.
 
-Default local ports are set to avoid conflict when your PC already runs Apache on `80` and MySQL on `3306`.
+Default local ports are set to avoid conflict when your PC already runs Apache on `80` and MySQL on `3306`:
 
 - app: `8080`
 - mysql: `3308`
 
 1. Create the Docker environment file
    ```bash
-   cp .env.example .env
+   cp .env.docker.example .env.docker
    ```
-2. Review `.env.docker` and update database or app settings if needed.
-   You can change `DOCKER_APP_PORT` and `DOCKER_DB_PORT` there.
+   Review `.env.docker` and update database, app, or WSO2 settings if needed.
+
+2. (Optional) Override the host ports via a compose `.env` file or environment variables:
+   ```bash
+   echo "DOCKER_APP_PORT=8080" > .env
+   echo "DOCKER_DB_PORT=3308" >> .env
+   ```
+
 3. Start the containers
    ```bash
    docker compose up -d --build
    ```
-4. Open the app at `http://localhost:8080`
+
+4. Seed the database (first run only — migrations run automatically at startup):
+   ```bash
+   docker compose exec app php artisan db:seed --force
+   ```
+
+5. Open the app at `http://localhost:8080`
+
+   Default login: `superadmin@example.com` / `Password@123`
 
 Useful commands:
 
@@ -71,6 +87,7 @@ Useful commands:
 docker compose down
 docker compose logs -f
 docker compose exec app php artisan migrate
+docker compose exec app php artisan key:generate --show
 ```
 
 ## ⚙️ Ansible Deployment

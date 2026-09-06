@@ -1,3 +1,29 @@
+# Stage 1: Install Composer dependencies
+FROM composer:2 AS vendor
+
+WORKDIR /app
+
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts --ignore-platform-reqs
+
+# Stage 2: Build frontend assets
+FROM node:22-bookworm-slim AS build
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY vite.config.js ./
+COPY resources ./resources
+COPY public ./public
+
+# Flux CSS and framework view paths are referenced from app.css
+COPY --from=vendor /app/vendor ./vendor
+
+RUN npm run build
+
+# Stage 3: Application runtime
 FROM php:8.4-fpm
 
 # Install system dependencies
@@ -15,15 +41,23 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip xml \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
 WORKDIR /var/www/html
 
-# Copy project files (used for production builds; dev uses volume mount)
+# Application code
 COPY . .
 
-RUN composer install --no-interaction --no-dev --optimize-autoloader || true
+# Composer dependencies
+COPY --from=vendor /app/vendor ./vendor
+
+# Built frontend assets
+COPY --from=build /app/public/build ./public/build
+
+# Pass environment variables through to PHP workers
+COPY docker/php-fpm.d/zz-clear-env.conf /usr/local/etc/php-fpm.d/zz-clear-env.conf
+
+# Fix permissions for Laravel storage/cache
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 9000
 
