@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use App\Traits\Blameable;
-use App\Models\CadreDMSApproved;
-use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Institution
@@ -16,21 +15,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property string $workplace_id
  * @property string|null $census_no
  * @property int|null $active_status
- * @property-read \App\Models\ZonalEducationOffice|null $zonalEducationOffice
- * @property-read \App\Models\DivisionalEducationOffice|null $divisionalEducationOffice
- * @property-read \App\Models\DistrictsList|null $district
- * @property-read \App\Models\InstitutionCategory|null $institutionCategory
- * @property-read \App\Models\InstitutionAuthority|null $authority
- * @property-read \App\Models\InstitutionLanguages|null $institutionLanguages
- * @property-read \App\Models\InstitutionGender|null $typeByGender
- * @property-read \App\Models\InstitutionType|null $institutionType
- * @property-read \App\Models\GradeSpan|null $gradeSpan
- * @property-read \App\Models\PoliceStation|null $policeStation
- * @property-read \App\Models\MohArea|null $mohArea
+ * @property-read ZonalEducationOffice|null $zonalEducationOffice
+ * @property-read DivisionalEducationOffice|null $divisionalEducationOffice
+ * @property-read DistrictsList|null $district
+ * @property-read InstitutionCategory|null $institutionCategory
+ * @property-read InstitutionAuthority|null $authority
+ * @property-read InstitutionLanguages|null $institutionLanguages
+ * @property-read InstitutionGender|null $typeByGender
+ * @property-read InstitutionalFacility|null $facilities
+ * @property-read InstitutionType|null $institutionType
+ * @property-read GradeSpan|null $gradeSpan
+ * @property-read PoliceStation|null $policeStation
+ * @property-read MohArea|null $mohArea
+ * @property-read Workplaces|null $workplace
  */
 class Institution extends Model
 {
-    use HasFactory, LogsActivity, Blameable;
+    use Blameable;
+    use HasFactory;
+    use LogsActivity;
 
     protected $table = 'institutions';
 
@@ -71,20 +74,19 @@ class Institution extends Model
         'updated_by',
     ];
 
-    // If you want to filter active institutions by default
+    protected $casts = [
+        'active_status' => 'boolean',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Query scopes
+    |--------------------------------------------------------------------------
+    */
+
     public function scopeActive($query)
     {
         return $query->where('active_status', 1);
-    }
-
-    public function setMissionAttribute($value)
-    {
-        $this->attributes['mission'] = $value ? strtolower($value) : null;
-    }
-
-    public function setVisionAttribute($value)
-    {
-        $this->attributes['vision'] = $value ? strtolower($value) : null;
     }
 
     public function scopeNational($query)
@@ -97,116 +99,36 @@ class Institution extends Model
         return $query->where('authority_id', 'AUID02');
     }
 
-    /* ============================
-       Relationships
-       ============================ */
+    /*
+    |--------------------------------------------------------------------------
+    | Mutators
+    |--------------------------------------------------------------------------
+    */
 
-
-
-    public function divisionalEducationOffice()
+    public function setMissionAttribute($value): void
     {
-        return $this->belongsTo(DivisionalEducationOffice::class, 'deo_wp_id', 'workplace_id');
+        $this->attributes['mission'] = $value
+            ? strtolower($value)
+            : null;
     }
 
-    public function district()
+    public function setVisionAttribute($value): void
     {
-        return $this->belongsTo(DistrictsList::class, 'district_id', 'district_id');
+        $this->attributes['vision'] = $value
+            ? strtolower($value)
+            : null;
     }
 
-    public function institutionCategory()
-    {
-        return $this->belongsTo(InstitutionCategory::class, 'institution_category_id', 'institution_category_id');
-    }
-
-    public function authority()
-    {
-        return $this->belongsTo(InstitutionAuthority::class, 'authority_id', 'authority_id');
-    }
-
-    public function institutionLanguages()
-    {
-        return $this->belongsTo(InstitutionLanguages::class, 'language_id', 'language_id');
-    }
-
-    public function typeByGender()
-    {
-        return $this->belongsTo(InstitutionGender::class, 'gender_id', 'gender_id');
-    }
-
-    public function facilities()
-    {
-        return $this->belongsTo(InstitutionalFacility::class, 'facilities_id', 'facilities_id');
-    }
-
-    public function institutionType()
-    {
-        return $this->belongsTo(InstitutionType::class, 'institution_types_id', 'institution_types_id');
-    }
-
-    public function gradeSpan()
-    {
-        return $this->belongsTo(GradeSpan::class, 'grade_span_id', 'grade_span_id');
-    }
-
-    public function policeStation()
-    {
-        return $this->belongsTo(PoliceStation::class, 'police_station_id', 'police_station_id');
-    }
-
-    public function mohArea()
-    {
-        return $this->belongsTo(MohArea::class, 'moh_area_id', 'moh_area_id');
-    }
-
-    public function ethnicity()
-    {
-        return $this->belongsTo(InstitutionEthnisity::class, 'ethnicity_id', 'ethnicity_id');
-    }
-
-    public function staffList()
-    {
-        return $this->hasMany(EmployerCurrentAppointment::class, 'workplace_id', 'workplace_id');
-    }
-
-    public function getLogoUrlAttribute()
-    {
-        $path = 'public/images/institution/' . $this->logo;
-
-        return ($this->logo && Storage::exists($path))
-            ? asset('storage/images/institution/' . $this->logo)
-            : asset('images/default_logo.png');
-    }
-
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logAll()
-            ->logOnlyDirty()
-            ->useLogName('institutions')
-            ->dontSubmitEmptyLogs();
-    }
-
-    public function cadreApproved()
-    {
-        // workplace_id in institutions matches workplace_id in cadre_d_m_s_approveds
-        return $this->hasMany(CadreDMSApproved::class, 'workplace_id', 'workplace_id');
-    }
-
-    public function nsCatHistory()
-    {
-        return $this->hasMany(InstitutionalNsCatHistory::class, 'workplace_id', 'workplace_id');
-    }
-
-    public function facilityHistory()
-    {
-        return $this->hasMany(InstitutionalFacilityHistory::class, 'workplace_id', 'workplace_id');
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | Office relationships
+    |--------------------------------------------------------------------------
+    */
 
     public function workplace()
     {
         return $this->belongsTo(
-            \App\Models\Workplace::class,
+            Workplaces::class,
             'workplace_id',
             'workplace_id'
         );
@@ -215,9 +137,214 @@ class Institution extends Model
     public function zonalEducationOffice()
     {
         return $this->belongsTo(
-            \App\Models\ZonalEducationOffice::class,
+            ZonalEducationOffice::class,
             'zeo_wp_id',
             'workplace_id'
         );
+    }
+
+    public function divisionalEducationOffice()
+    {
+        return $this->belongsTo(
+            DivisionalEducationOffice::class,
+            'deo_wp_id',
+            'workplace_id'
+        );
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(
+            DistrictsList::class,
+            'district_id',
+            'district_id'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Institution classification relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function institutionCategory()
+    {
+        return $this->belongsTo(
+            InstitutionCategory::class,
+            'institution_category_id',
+            'institution_category_id'
+        );
+    }
+
+    public function authority()
+    {
+        return $this->belongsTo(
+            InstitutionAuthority::class,
+            'authority_id',
+            'authority_id'
+        );
+    }
+
+    public function institutionLanguages()
+    {
+        return $this->belongsTo(
+            InstitutionLanguages::class,
+            'language_id',
+            'language_id'
+        );
+    }
+
+    public function typeByGender()
+    {
+        return $this->belongsTo(
+            InstitutionGender::class,
+            'gender_id',
+            'gender_id'
+        );
+    }
+
+    public function facilities()
+    {
+        return $this->belongsTo(
+            InstitutionalFacility::class,
+            'facilities_id',
+            'facilities_id'
+        );
+    }
+
+    public function institutionType()
+    {
+        return $this->belongsTo(
+            InstitutionType::class,
+            'institution_types_id',
+            'institution_types_id'
+        );
+    }
+
+    public function gradeSpan()
+    {
+        return $this->belongsTo(
+            GradeSpan::class,
+            'grade_span_id',
+            'grade_span_id'
+        );
+    }
+
+    public function ethnicity()
+    {
+        return $this->belongsTo(
+            InstitutionEthnisity::class,
+            'ethnicity_id',
+            'ethnicity_id'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Location relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function policeStation()
+    {
+        return $this->belongsTo(
+            PoliceStation::class,
+            'police_station_id',
+            'police_station_id'
+        );
+    }
+
+    public function mohArea()
+    {
+        return $this->belongsTo(
+            MohArea::class,
+            'moh_area_id',
+            'moh_area_id'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Employee and cadre relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function staffList()
+    {
+        return $this->hasMany(
+            EmployerCurrentAppointment::class,
+            'workplace_id',
+            'workplace_id'
+        );
+    }
+
+    public function cadreApproved()
+    {
+        return $this->hasMany(
+            CadreDMSApproved::class,
+            'workplace_id',
+            'workplace_id'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Institution history relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function nsCatHistory()
+    {
+        return $this->hasMany(
+            InstitutionalNsCatHistory::class,
+            'workplace_id',
+            'workplace_id'
+        );
+    }
+
+    public function facilityHistory()
+    {
+        return $this->hasMany(
+            InstitutionalFacilityHistory::class,
+            'workplace_id',
+            'workplace_id'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    public function getLogoUrlAttribute(): string
+    {
+        $path = 'public/images/institution/'.$this->logo;
+
+        if (
+            $this->logo
+            && Storage::exists($path)
+        ) {
+            return asset(
+                'storage/images/institution/'.$this->logo
+            );
+        }
+
+        return asset('images/default_logo.png');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity logging
+    |--------------------------------------------------------------------------
+    */
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->useLogName('institutions')
+            ->dontSubmitEmptyLogs();
     }
 }

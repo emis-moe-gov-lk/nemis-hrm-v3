@@ -84,6 +84,8 @@ class DatabaseSeeder extends Seeder
         $this->call(TeacherTransferRecommendationListSeeder::class);
         $this->call(TeacherTransferBoardRecommendationListSeeder::class);
 
+        $this->call(ServiceMarkPermissionSeeder::class);
+
 
 
         // User::factory(10)->create();
