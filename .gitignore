@@ -1,4 +1,5 @@
 /.phpunit.cache
+/.phpunit.cache/
 /node_modules
 /public/build
 /public/hot
@@ -25,3 +26,47 @@ yarn-error.log
 /.vscode
 /.zed
 config.bat
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# Archives / binaries
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+*.bak
+*.tmp
+
+# Agent / scratch files
+/.codex
+/.claude
+/.aider*
+/.replit
+.cursorignore
+
+# Laravel runtime
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore
+/storage/app/private/
+/storage/app/public/
+/storage/framework/cache/data/
+/storage/framework/sessions/
+/storage/framework/views/
+/storage/framework/mpdf/
+/storage/framework/testing/
+/storage/logs/*.log
+!/storage/logs/.gitignore
+
+# Database dumps (keep migrations/*.php)
+/database/*.sqlite
+/database/*.sqlite3
+/database/*.sql
